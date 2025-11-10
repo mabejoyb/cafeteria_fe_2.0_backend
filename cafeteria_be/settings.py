@@ -136,7 +136,7 @@ DATABASES = {
         'CLIENT': {
             'host': os.environ.get('DB_HOST'),  # URI completo con nombre de base
             'ssl': True,
-            'ssl_cert_reqs': 'CERT_REQUIRED'  # Usar 'CERT_NONE' solo si hay errores de handshake en desarrollo
+            'ssl_cert_reqs': 'CERT_NONE'  # Usar 'CERT_NONE' solo si hay errores de handshake en desarrollo
         }
     }
 }
