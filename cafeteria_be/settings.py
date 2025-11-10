@@ -134,9 +134,9 @@ DATABASES = {
         'NAME': 'cafeteriaFeDB',
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': os.environ.get('DB_HOST'),  # URI completo con nombre de base
-            'ssl': True,
-            'ssl_cert_reqs': 'CERT_NONE'  # Usar 'CERT_NONE' solo si hay errores de handshake en desarrollo
+            'host': os.environ.get('DB_HOST', 'mongodb+srv://mabejoy_db_user:rLcHj90hRwUHg7rT@cluster0.stv1jqo.mongodb.net/?retryWrites=true&w=majority'),
+            'tls': True,
+            'tlsAllowInvalidCertificates': True,
         }
     }
 }
