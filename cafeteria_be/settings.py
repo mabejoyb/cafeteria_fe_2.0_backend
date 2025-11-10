@@ -131,13 +131,12 @@ CSRF_TRUSTED_ORIGINS = [
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': os.environ.get('DB_NAME'),
+        'NAME': 'cafeteriaFeDB',
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': os.environ.get('DB_HOST'),
+            'host': os.environ.get('DB_HOST'),  # URI completo con nombre de base
             'ssl': True,
-            # 🌟 MODIFICACIÓN CRÍTICA 5: REQUERIR CERTIFICADO SSL EN PRODUCCIÓN 🌟
-            'ssl_cert_reqs': 'CERT_REQUIRED'
+            'ssl_cert_reqs': 'CERT_REQUIRED'  # Usar 'CERT_NONE' solo si hay errores de handshake en desarrollo
         }
     }
 }
