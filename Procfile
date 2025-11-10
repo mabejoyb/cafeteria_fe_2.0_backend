@@ -1,0 +1,1 @@
+web: gunicorn cafeteria_be.wsgi:application --log-file -

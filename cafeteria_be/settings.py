@@ -20,19 +20,29 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Cargar las variables de entorno
+# Cargar las variables de entorno (útil para desarrollo local con .env)
 load_dotenv(os.path.join(BASE_DIR, '.env'), override=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=u#gcv7_9^9ny0h_a489n#3h06wb@%h=c8_5%88+hi)mwn(a3q'
+# 🌟 MODIFICACIÓN CRÍTICA 1: CARGAR SECRET_KEY DESDE VARIABLE DE ENTORNO 🌟
+# En Render, debes configurar una variable de entorno llamada SECRET_KEY con un valor seguro.
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY', 
+    'django-insecure-=u#gcv7_9^9ny0h_a489n#3h06wb@%h=c8_5%88+hi)mwn(a3q' # Se mantiene solo como fallback (no seguro)
+)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# 🌟 MODIFICACIÓN CRÍTICA 2: DESACTIVAR DEBUG EN PRODUCCIÓN 🌟
+# Render inyectará esta variable, por defecto estará en False si no existe.
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['cafeteria-be.onrender.com']
+# 🌟 MODIFICACIÓN CRÍTICA 3: HOSTS PERMITIDOS MÁS ROBUSTOS PARA RENDER 🌟
+# Permite tu dominio y cualquier dominio *.onrender.com (incluyendo dominios personalizados)
+ALLOWED_HOSTS = [
+    'cafeteria-be.onrender.com',
+    '.onrender.com'
+]
 
 # Application definition
 
@@ -61,9 +71,13 @@ REST_FRAMEWORK = {
     )
 }
 
+# 🌟 MODIFICACIÓN CRÍTICA 4: AÑADIR WHITE NOISE PARA ARCHIVOS ESTÁTICOS 🌟
+# WhiteNoise maneja el servicio de archivos estáticos de forma eficiente en producción.
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    # WhiteNoise debe ir aquí, justo después de SecurityMiddleware
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -94,14 +108,13 @@ WSGI_APPLICATION = 'cafeteria_be.wsgi.application'
 
 # SIMPLE JWT TOKEN
 SIMPLE_JWT = {
-    # "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    # "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=15),
     "SIGNING_KEY": os.environ.get('JWT_SECRET', secrets.token_urlsafe(32))
 }
 
 # CORS
+# Las URLs son correctas, asumiendo que cafeteria-fe.onrender.com es tu frontend.
 CORS_ALLOWED_ORIGINS = [
     'https://cafeteria-be.onrender.com',
     'https://cafeteria-fe.onrender.com',
@@ -118,12 +131,13 @@ CSRF_TRUSTED_ORIGINS = [
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': os.environ.get('DB_NAME'),  # Use your actual database name here
+        'NAME': os.environ.get('DB_NAME'),
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
             'host': os.environ.get('DB_HOST'),
             'ssl': True,
-            'ssl_cert_reqs': 'CERT_NONE'  # Change to 'CERT_REQUIRED' for production
+            # 🌟 MODIFICACIÓN CRÍTICA 5: REQUERIR CERTIFICADO SSL EN PRODUCCIÓN 🌟
+            'ssl_cert_reqs': 'CERT_REQUIRED'
         }
     }
 }
@@ -132,22 +146,6 @@ DATABASES = {
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = []
-
-""" AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-] """
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
@@ -165,6 +163,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# 🌟 MODIFICACIÓN CRÍTICA 6: DEFINIR STATIC_ROOT PARA PRODUCCIÓN 🌟
+# Directorio donde Django recolectará todos los archivos estáticos al hacer 'collectstatic'.
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
