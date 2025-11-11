@@ -134,9 +134,12 @@ DATABASES = {
         'NAME': 'cafeteriaFeDB',
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': os.environ.get('DB_HOST', 'mongodb+srv://mabejoy_db_user:rLcHj90hRwUHg7rT@cluster0.stv1jqo.mongodb.net/?retryWrites=true&w=majority'),
-            'tls': True,
-            'tlsAllowInvalidCertificates': True,
+            'host': os.environ.get(
+                'DB_HOST',
+                'mongodb+srv://mabejoy_db_user:rLcHj90hRwUHg7rT@cluster0.stv1jqo.mongodb.net/cafeteriaFeDB?retryWrites=true&w=majority'
+            ),
+            'ssl': True,
+            'ssl_cert_reqs': 'CERT_NONE'  # ⚠️ Temporal para evitar handshake error
         }
     }
 }
